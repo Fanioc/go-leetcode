@@ -10,8 +10,8 @@ type ListNode struct {
   Next *ListNode
 }
 
-//考虑大整数的问题
-func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+//no consider big int
+func addTwoNumbersT1(l1 *ListNode, l2 *ListNode) *ListNode {
   num1, num2, i := 0, 0, 1
   for l1 != nil {
     num1 = num1 + l1.Val*i
@@ -44,14 +44,65 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
   return &ls
 }
 
+//carry add perfect
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+  num1, num2, carryFlag := 0, 0, 0
+  headLs := ListNode{0, nil}
+  lsp := &headLs
+  for l1 != nil || l2 != nil || carryFlag == 1 {
+    headLs.Val++
+    lsp.Next = &ListNode{}
+    lsp = lsp.Next
+    
+    if l2 != nil {
+      num2 = l2.Val
+      l2 = l2.Next
+    } else {
+      num2 = 0
+    }
+    
+    if l1 != nil {
+      num1 = l1.Val
+      l1 = l1.Next
+    } else {
+      num1 = 0
+    }
+    
+    lsp.Val = (num1 + num2) % 10
+    if carryFlag == 1 {
+      if carryFlag+lsp.Val >= 10 {
+        carryFlag = 1
+        lsp.Val = 0
+      } else {
+        carryFlag = 0
+        lsp.Val++
+      }
+    }
+    
+    if num1+num2+carryFlag >= 10 {
+      carryFlag = 1 //判断进位
+    } else {
+      carryFlag = 0
+    }
+  }
+  
+  return headLs.Next
+}
+
 func main() {
   L1 := ListNode{
-    1, &ListNode{
-      8, nil,
+    2, &ListNode{
+      4, &ListNode{
+        3, nil,
+      },
     },
   }
   L2 := ListNode{
-    0, nil,
+    5, &ListNode{
+      6, &ListNode{
+        4, nil,
+      },
+    },
   }
   fmt.Print(addTwoNumbers(&L1, &L2))
 }
